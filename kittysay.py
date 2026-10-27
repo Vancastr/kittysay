@@ -7,16 +7,16 @@ def combine_phrase(elems: list, width: int):
     maximum = 0
     dissed_elems = []
     for elem in elems[1:]:
-        if len(elem) > maximum:
-            maximum = len(elem)
         if len(elem) > width:
             diff = len(elem) // width
             for i in range(diff):
-                dissed_elems.append(elem[i * 0:(i + 1) * width - 1])
+                dissed_elems.append(elem[i * width:(i + 1) * width - 1])
             dissed_elems.append(elem[(diff) * width:])
         else:
             dissed_elems.append(elem)
-    print(dissed_elems)
+    for elem in dissed_elems:
+        if len(elem) > maximum:
+            maximum = len(elem)
     result = []
     while len(dissed_elems) > 0:
         temp = dissed_elems.pop(0)
@@ -32,15 +32,23 @@ def combine_phrase(elems: list, width: int):
     return result, maximum
 
 def add_cloud(text: list, length: int):
-    print("-" * (length + 2))
-    print("-" * (length + 2))
+    print(" " + "_" * (length + 2))
+    if len(text) > 1:
+        print(f"/ {text[0]}" + " " * (length - len(text[0])) + " \\")
+        for i in range(1, len(text) - 1):
+            print(f"| {text[i]}" + " " * (length - len(text[i])) + " |")
+        print(f"\\ {text[-1]}" + " " * (length - len(text[-1])) + " /")
+    else:
+        print(f"< {text[0]} >")
+    print(" " + "-" * (length + 2))
 
 def main():
+    columns = 30
     win_size = shutil.get_terminal_size()
-    phrase, length = combine_phrase(sys.argv, win_size.columns - 4)
+    if win_size.columns - 4 < columns:
+        columns = win_size.columns - 4
+    phrase, length = combine_phrase(sys.argv, columns)
     add_cloud(phrase, length)
-    for line in phrase:
-        print(line)
     return
 
 if __name__ == "__main__":
